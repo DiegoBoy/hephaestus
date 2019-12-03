@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #Author: rewardone
 #Description:
 # Requires root or enough permissions to use tcpdump
@@ -14,6 +14,6 @@
 if [ -z $1 ] || [ -z $2 ]; then echo "Usage: ./smbver.sh <interface> <ip4_addr/hostname> [port]" && exit; else iface=$1; rhost=$2; fi
 if [ ! -z $3 ]; then rport=$3; else rport=139; fi
 
-tcpdump -s0 -n -i $iface src $rhost and port $rport -A -c 7 2>/dev/null | grep -i "samba\|s.a.m" | tr -d '.' | grep -oP 'UnixSamba.*[0-9a-z]' | tr -d '\n' & echo -n "$rhost: " &
+tcpdump -s0 -n -i $iface src $rhost and port $rport -A -c 7 2>/dev/null | grep -i "samba\|s.a.m" | tee >(tr -d '.' | grep -oP 'UnixSamba.*[0-9a-z]' | tr -d '\n') & echo "$rhost: " &
 sleep 1 && echo "exit" | smbclient -L $rhost 1>/dev/null 2>/dev/null
 sleep 2 && echo ""
