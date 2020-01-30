@@ -620,9 +620,15 @@ function w4b_enum_AppAndSvc {
     w4b_print_subheader "History"
     w4b_exec "history" # command history for current shell
     w4b_find "
-/home/*/*_history*
-/root/*_history*
+/home/*/.*_history
+/root/.*_history
 "
+
+    # sudo, setuid & setgid
+    w4b_print_subheader "Run As"
+    w4b_exec "sudo -nl" # list user's privs non-interactively
+    w4b_exec "find / -xdev -type f -perm /4000 -exec ls -dl --color=always {} \; 2>/dev/null" # find setuid files
+    w4b_exec "find / -xdev -type f -perm /2000 -exec ls -dl --color=always {} \; 2>/dev/null" # find setgid files
 }
 
 
