@@ -13,6 +13,7 @@ while True:
     print 'Got connection from [%s:%d]' % (addr[0], addr[1])
 
     filename_len = ord(conn.recv(1))
+    print 'Ready for filename of len [%d]' % filename_len
     filename = conn.recv(filename_len)
     print 'Ready for file [%s]' % filename
 

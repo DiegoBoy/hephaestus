@@ -13,6 +13,7 @@ print 'File sender connected to [%s:%d]' % (host, port)
 filename_base = ntpath.basename(filename)
 filename_len = len(filename_base)
 s.send(str(chr(filename_len)))
+print 'Sent file name length [%d]' % filename_len
 s.send(filename_base)
 print 'Sent target file name [%s]' % filename_base
 

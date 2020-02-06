@@ -557,7 +557,7 @@ function w4b_enum_UsersAndGroups {
 
 # fun:
 #   enumerates Processes & Jobs
-function enum_ProcessAndJobs {
+function w4b_enum_ProcessAndJobs {
     w4b_print_header "Processes & Jobs"
 
     # processes run by root
@@ -587,34 +587,22 @@ function enum_ProcessAndJobs {
 
 
 # fun:
-#   enumerates Sudo
-function enum_Sudo {
-    w4b_print_header "Sudo"
-    w4b_exec "sudo -V" # sudo version, does an exploit exist?
-    w4b_exec "sudo -l" # what can we do with sudo?
-    w4b_exec "sudo -l | grep -w 'awk\|bash\|chmod\|cp\|find\|irb\|less\|lua\|man\|more\|nc\|netcat\|nmap\|perl\|python\|ruby\|sh\|vi\|vim\|zsh'" # any binaries we can sudo and get shell from?
-    w4b_find "/etc/sudoers"
-}
-
-
-
-# fun:
 #   enumerates Apps & Services
 function w4b_enum_AppAndSvc {
     w4b_print_header "Apps & Services"
     
     # installed
-    w4b_print_subheader "Installed"
-    w4b_exec "dpkg -l" # list installed packages (distro:Debian,Ubuntu)
-    w4b_exec "rpm -qa" # list installed packages (distro:RedHat)
-    w4b_exec "pkg_info" # list installed packages (distro:OpenBSD,FreeBSD)
-    w4b_exec "chkconfig --list" # list all system services (distro:RedHat)
-    w4b_find "
-/var/cache/apt/archiveso
-/var/cache/yum
-/usr/bin/*
-/sbin/*
-"
+    #w4b_print_subheader "Installed"
+    #w4b_exec "dpkg -l" # list installed packages (distro:Debian,Ubuntu)
+    #w4b_exec "rpm -qa" # list installed packages (distro:RedHat)
+    #w4b_exec "pkg_info" # list installed packages (distro:OpenBSD,FreeBSD)
+    #w4b_exec "chkconfig --list" # list all system services (distro:RedHat)
+    #w4b_find "
+#/var/cache/apt/archiveso
+#/var/cache/yum
+#/usr/bin/*
+#/sbin/*
+#"
     
     # history
     w4b_print_subheader "History"
@@ -626,9 +614,13 @@ function w4b_enum_AppAndSvc {
 
     # sudo, setuid & setgid
     w4b_print_subheader "Run As"
+    w4b_exec "sudo -nV" # sudo version, does an exploit exist?
     w4b_exec "sudo -nl" # list user's privs non-interactively
+    w4b_exec "sudo -nl | grep -w 'awk\|bash\|chmod\|cp\|find\|irb\|less\|lua\|man\|more\|nc\|netcat\|nmap\|perl\|python\|ruby\|sh\|vi\|vim\|zsh'" # any binaries we can sudo and get shell from?
     w4b_exec "find / -xdev -type f -perm /4000 -exec ls -dl {} \\; 2>/dev/null || true" # find setuid files
     w4b_exec "find / -xdev -type f -perm /2000 -exec ls -dl {} \\; 2>/dev/null || true" # find setgid files
+
+    w4b_find "/etc/sudoers"
 }
 
 
@@ -652,6 +644,7 @@ function w4b {
     w4b_enum_DevicesAndFilesystems | w4b_write_output "dev_fs"
     w4b_enum_EnvVars | w4b_write_output "env"
     w4b_enum_UsersAndGroups | w4b_write_output "users_groups"
+    w4b_enum_ProcessAndJobs | w4b_write_output "procs_jobs"
     w4b_enum_AppAndSvc | w4b_write_output "app_svc"
 }
 
