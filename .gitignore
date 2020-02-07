@@ -1,7 +1,11 @@
+/BinExp/gdb-gef/
+
 /PrivEsc/linux-exploit-suggester/
 /PrivEsc/les.sh
 
 /PrivEsc/wesng/
 /PrivEsc/wes.py
 
-/misc/
+/misc/Empire/
+/misc/nishang/
+/misc/PowerSploit/

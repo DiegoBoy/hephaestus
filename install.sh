@@ -20,9 +20,6 @@ echo "[X] BinExp"
 ### Disco tools
 mkdir -p Disco
 
-# enyx.py
-wget -q -O Disco/enyx.py https://raw.githubusercontent.com/trickster0/Enyx/master/enyx.py
-
 # gobuster
 sudo apt-get install gobuster -y
 
