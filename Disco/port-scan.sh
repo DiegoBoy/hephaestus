@@ -7,7 +7,12 @@ function log_info() {
 }
 
 function help() {
-    echo "Usage: ${0} <'tcp' | 'udp'}> <hostname | ip>"
+    echo "Usage: $(basename ${0}) <-t | -u> <target> [-6]"
+    echo ""
+    echo "Options:"
+    echo "      -t                TCP scan"
+    echo "      -u                UDP scan"
+    echo "      -6                IPv6 scan"
     exit 1
 }
 
@@ -17,19 +22,25 @@ function nmap() {
 
 
 protocol=""
-scan=""
-if [[ ${#} -ne 2 ]]; then
+nmap_flag=""
+amap_flag=""
+ip_flag=""
+
+# check argc and protocol
+if [[ ${#} -lt 2 ]] || [[ ${#} -gt 3 ]]; then
     help
 else
-    case "${1,,}" in
-        "tcp" | "-t")
+    case "${1}" in
+        "-t")
         protocol="tcp"
-        scan="-sS"
+        nmap_flag="-sS"
+        amap_flag=""
         ;;
 
-        "udp" | "-u")
+        "-u")
         protocol="udp"
-        scan="-sU"
+        nmap_flag="-sU"
+        amap_flag="-u"
         ;;
 
         *)
@@ -38,13 +49,29 @@ else
     esac
 fi
 
+# check optional IPv6 flag
+if [[ ${3} ]]; then
+    if [[ ${3} == "-6" ]]; then
+        ip_flag="-6"
+    else
+        help
+    fi
+fi
+
 target=${2}
-open_filename="${protocol}-open.nmap"
-scan_filename="${protocol}-scan.nmap"
+open_filename="${protocol}-open${ip_flag}.gnmap"
+nmap_filename="${protocol}-scan${ip_flag}.nmap"
+amap_filename="${protocol}-scan${ip_flag}.amap"
 
 log_info "[*] Looking for open ports..."
-nmap ${target} ${scan} -n -Pn -v -p- -T5 -oG ${open_filename}
-csv_open_ports=$(cat ${open_filename} | tail -n 2 | head -n 1 | cut -f2 | grep -oP '(\d+)(?=/open)' | paste -sd ',')
+nmap ${target} ${nmap_flag} -n -Pn -v -p- -T5 -oG ${open_filename} ${ip_flag}
 
-log_info "[*] Scanning ports found..."
-nmap $target ${scan} -n -Pn -v -p${csv_open_ports} -A -oN ${scan_filename}
+log_info "[*] Scanning ports (nmap)..."
+# get comma-separated-values of open ports from gnmap file
+csv_open_ports=$(cat ${open_filename} | tail -n 2 | head -n 1 | cut -f2 | grep -oP '(\d+)(?=/open)' | paste -sd ',')
+nmap ${target} ${nmap_flag} -n -Pn -v -p${csv_open_ports} -A -oN ${nmap_filename} ${ip_flag}
+
+log_info "[*] Scanning ports (amap)..."
+# pass space-separated-values for amap because there's a bug parsing IPv6 addresses from gnmap file
+ssv_open_ports=$(echo ${csv_open_ports} | tr "," " ")
+amap -A ${amap_flag} -i ${open_filename} -o ${amap_filename} ${ip_flag} ${target} ${ssv_open_ports}
