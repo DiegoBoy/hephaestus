@@ -66,6 +66,10 @@ amap_filename="${protocol}-scan${ip_flag}.amap"
 log_info "[*] Looking for open ports..."
 nmap ${target} ${nmap_flag} -n -Pn -v -p- -T5 -oG ${open_filename} ${ip_flag}
 
+if [[ -z $(grep /open/ ${open_filename}) ]]; then
+    log_info "[-] No open ports found, bye!"
+    exit 0
+
 log_info "[*] Scanning ports (nmap)..."
 # get comma-separated-values of open ports from gnmap file
 csv_open_ports=$(cat ${open_filename} | tail -n 2 | head -n 1 | cut -f2 | grep -oP '(\d+)(?=/open)' | paste -sd ',')
