@@ -59,7 +59,7 @@ if [[ ${3} ]]; then
 fi
 
 target=${2}
-open_filename="${protocol}-open${ip_flag}.gnmap"
+open_filename="${protocol}-open${ip_flag}.nmap.grep"
 nmap_filename="${protocol}-scan${ip_flag}.nmap"
 amap_filename="${protocol}-scan${ip_flag}.amap"
 

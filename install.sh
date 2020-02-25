@@ -28,15 +28,12 @@ echo "[X] Disco"
 
 
 ### PrivEsc tools
-mkdir -p PrivEsc
 
 # linux exploit suggester
 git clone https://github.com/DiegoBoy/linux-exploit-suggester.git PrivEsc/linux-exploit-suggester
-ln -s PrivEsc/linux-exploit-suggester/linux-exploit-suggester.sh PrivEsc/les.sh
 
 # windows exploit suggester
 git clone https://github.com/bitsadmin/wesng.git PrivEsc/wesng
-ln -s PrivEsc/wesng/wes.py PrivEsc/wes.py
 
 echo "[X] PrivEsc"
 

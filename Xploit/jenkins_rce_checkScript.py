@@ -4,6 +4,7 @@
 # 
 # CVE-2018-1000861
 # CVE-2019-1003005
+# CVE-2019-1003029
 
 import sys
 import requests
