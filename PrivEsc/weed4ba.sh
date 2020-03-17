@@ -17,6 +17,7 @@ readonly _W4B_SET=$(set)
 declare w4b_aggressive
 declare w4b_color_results
 declare w4b_file_output
+declare w4b_mode="all"
 declare w4b_verbose
 
 
@@ -348,9 +349,11 @@ function w4b_print_help {
     printf "Usage: $(basename ${0}) [options]\n"
     printf "\n"
     printf "Options:\n"
-    printf "      -a                Aggressive mode - heavy use of regex, extensive enum (slower) \n"
+    printf "      -a                Aggressive mode - heavy use of regex, extensive enum (slower)\n"
     printf "      -f                Output to files instead of STDOUT\n"
-    printf "      -i                Highlight interesting regex in cmd results (slow) \n"
+    printf "      -i                Highlight interesting regex in cmd results (slow)\n"
+    printf "      -l                List enumeration modes\n"
+    printf "      -m                Enumeration modes (csv, default: ALL)\n"
     printf "      -v                Verbose mode (show STDERR)\n"
     printf "      -h                Display this help message\n"
 }
@@ -360,13 +363,16 @@ function w4b_print_help {
 # fun:
 #   parses the args and validates them
 function w4b_parse_args {
-    while getopts 'afivh' OPTION; do
+    while getopts ':afilm:vh' OPTION; do
         case "${OPTION}" in
             a) w4b_aggressive=true;;
             f) w4b_file_output=true;;
             i) w4b_color_results=true;;
+            l) w4b_print_banner; w4b_print_modes; return 1;;
+            m) w4b_mode="${OPTARG}";;
             v) w4b_verbose=true;;
             h) w4b_print_help; return 1;;
+            :) printf "Error: -${OPTARG} requires an argument.\n";&
             *) printf "\n"; w4b_print_help; return 2;;
             
         esac
@@ -626,6 +632,23 @@ function w4b_enum_AppAndSvc {
 
 
 # fun:
+#   print enumeration modes
+function w4b_print_modes {
+printf "
+Enumeration modes (default = ALL):
+   1. os                OS
+   2. net               Networking
+   3. dev_fs            Devices & Filesystems
+   4. env               Environment Variables
+   5. users_groups      Users & Groups
+   6. procs_jobs        Processes & Jobs
+   7. app_svc           Apps & Services
+"
+}
+
+
+
+# fun:
 #   main
 # args:
 #   $* = args for weed4ba.sh (see fun w4b_print_help for usage)
@@ -639,13 +662,18 @@ function w4b {
         w4b_print_banner true
     #fi
     
-    w4b_enum_OS | w4b_write_output "os"
-    w4b_enum_Networking | w4b_write_output "net"
-    w4b_enum_DevicesAndFilesystems | w4b_write_output "dev_fs"
-    w4b_enum_EnvVars | w4b_write_output "env"
-    w4b_enum_UsersAndGroups | w4b_write_output "users_groups"
-    w4b_enum_ProcessAndJobs | w4b_write_output "procs_jobs"
-    w4b_enum_AppAndSvc | w4b_write_output "app_svc"
+    for mode in $(echo ${w4b_mode} | tr ',' '\n'); do
+        case "${mode,,}" in
+            "os" | "all") w4b_enum_OS | w4b_write_output "os";&
+            "net" | "all") w4b_enum_Networking | w4b_write_output "net";&
+            "dev_fs" | "all") w4b_enum_DevicesAndFilesystems | w4b_write_output "dev_fs";&
+            "env" | "all") w4b_enum_EnvVars | w4b_write_output "env";&
+            "users_groups" | "all") w4b_enum_UsersAndGroups | w4b_write_output "users_groups";&
+            "procs_jobs" | "all") w4b_enum_ProcessAndJobs | w4b_write_output "procs_jobs";&
+            "app_svc" | "all") w4b_enum_AppAndSvc | w4b_write_output "app_svc";;
+            *) w4b_print_error "Invalid mode: ${mode}"
+        esac
+    done
 }
 
 

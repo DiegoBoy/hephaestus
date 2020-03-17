@@ -23,6 +23,9 @@ mkdir -p Disco
 # gobuster
 sudo apt-get install gobuster -y
 
+# nc -> netcat-openbsd is IPv6 capable
+sudo apt-get install netcat-openbsd -y
+
 echo "[X] Disco"
 
 

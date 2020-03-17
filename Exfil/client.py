@@ -1,6 +1,12 @@
+#!/bin/python2
 import ntpath
+import os
 import socket
 import sys
+
+if len(sys.argv) != 4:
+    print 'Usage: %s <host> <port> <filename>' % os.path.basename(sys.argv[0])
+    sys.exit(1)
 
 host = sys.argv[1]
 port = int(sys.argv[2])
