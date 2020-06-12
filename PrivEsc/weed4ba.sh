@@ -576,7 +576,7 @@ function w4b_enum_ProcessAndJobs {
     w4b_exec "ps aux"
     w4b_exec "ps -ef"
     w4b_exec "top -b -n 1"
-    w4b_exec "ps aux | awk '{print \$11}'|xargs -r ls -la |awk '!x[\$0]++'" # lookup process binary path and permissions
+    w4b_exec "ps aux | awk '{print \$11}'|xargs -r ls -la 2>/dev/null|awk '!x[\$0]++'" # lookup process binary path and permissions
 
     # cron jobs
     w4b_print_subheader "CRON Jobs"
@@ -622,7 +622,8 @@ function w4b_enum_AppAndSvc {
     w4b_print_subheader "Run As"
     w4b_exec "sudo -nV" # sudo version, does an exploit exist?
     w4b_exec "sudo -nl" # list user's privs non-interactively
-    w4b_exec "sudo -nl | grep -w 'awk\|bash\|chmod\|cp\|find\|irb\|less\|lua\|man\|more\|nc\|netcat\|nmap\|perl\|python\|ruby\|sh\|vi\|vim\|zsh'" # any binaries we can sudo and get shell from?
+    gtfobins="apt-get\|apt\|aria2c\|arp\|ash\|awk\|base32\|base64\|bash\|bpftrace\|bundler\|busctl\|busybox\|byebug\|cancel\|cat\|chmod\|chown\|chroot\|cobc\|cp\|cpan\|cpulimit\|crash\|crontab\|csh\|curl\|cut\|dash\|date\|dd\|dialog\|diff\|dmesg\|dmsetup\|dnf\|docker\|dpkg\|easy_install\|eb\|ed\|emacs\|env\|eqn\|expand\|expect\|facter\|file\|find\|finger\|flock\|fmt\|fold\|ftp\|gawk\|gcc\|gdb\|gem\|genisoimage\|gimp\|git\|grep\|gtester\|hd\|head\|hexdump\|highlight\|iconv\|iftop\|ionice\|ip\|irb\|jjs\|journalctl\|jq\|jrunscript\|ksh\|ksshell\|ld.so\|ldconfig\|less\|logsave\|look\|ltrace\|lua\|lwp-download\|lwp-request\|mail\|make\|man\|mawk\|more\|mount\|mtr\|mv\|mysql\|nano\|nawk\|nc\|nice\|nl\|nmap\|node\|nohup\|nroff\|nsenter\|od\|openssl\|pdb\|perl\|pg\|php\|pic\|pico\|pip\|pry\|puppet\|python\|rake\|readelf\|red\|redcarpet\|restic\|rlogin\|rlwrap\|rpm\|rpmquery\|rsync\|ruby\|run-mailcap\|run-parts\|rvim\|scp\|screen\|script\|sed\|service\|setarch\|sftp\|shuf\|smbclient\|socat\|soelim\|sort\|sqlite3\|ssh\|start-stop-daemon\|stdbuf\|strace\|strings\|systemctl\|tac\|tail\|tar\|taskset\|tclsh\|tcpdump\|tee\|telnet\|tftp\|time\|timeout\|tmux\|top\|ul\|unexpand\|uniq\|unshare\|uudecode\|uuencode\|valgrind\|vi\|vim\|watch\|wget\|whois\|wish\|xargs\|xxd\|yelp\|yum\|zip\|zsh\|zsoelim\|zypper"
+    w4b_exec "sudo -nl | grep -w '${gtfobins}'" # any binaries we can sudo and get shell from?
     w4b_exec "find / -xdev -type f -perm /4000 -exec ls -dl {} \\; 2>/dev/null || true" # find setuid files
     w4b_exec "find / -xdev -type f -perm /2000 -exec ls -dl {} \\; 2>/dev/null || true" # find setgid files
 
