@@ -17,6 +17,14 @@ echo "[X] BinExp"
 
 
 
+### Creds tools
+mkdir -p Creds
+
+# seclists
+sudo apt-get install seclists -y
+
+
+
 ### Disco tools
 mkdir -p Disco
 
