@@ -1,4 +1,4 @@
-function Download-AzureCert {
+function Download-AzureKVCert {
   [CmdletBinding()]
   param(
     [Parameter(Mandatory)]
