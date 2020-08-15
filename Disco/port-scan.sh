@@ -64,7 +64,7 @@ nmap_filename="${protocol}-scan${ip_flag}.nmap"
 amap_filename="${protocol}-scan${ip_flag}.amap"
 
 log_info "[*] Looking for open ports..."
-nmap ${target} ${nmap_flag} -n -v -p- -T4 -oG ${open_filename} ${ip_flag}
+nmap ${target} ${nmap_flag} -n -v -p- -Pn --script=vuln -T4 -oG ${open_filename} ${ip_flag}
 
 if [[ -z $(grep /open/ ${open_filename}) ]]; then
     log_info "[-] No open ports found, bye!"
