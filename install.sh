@@ -50,19 +50,19 @@ echo "[X] PrivEsc"
 
 
 
-### misc tools
-mkdir -p misc
+### Post tools
+mkdir -p Post
 
 # nishang
-git clone https://github.com/samratashok/nishang.git misc/nishang
+git clone https://github.com/samratashok/nishang.git Post/nishang
 
 # PowerSploit 
-git clone https://github.com/PowerShellMafia/PowerSploit.git misc/PowerSploit
+git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
 
 # Empire
-git clone https://github.com/EmpireProject/Empire.git misc/Empire
+git clone https://github.com/EmpireProject/Empire.git Post/Empire
 
-echo "[X] misc"
+echo "[X] Post"
 
 
 

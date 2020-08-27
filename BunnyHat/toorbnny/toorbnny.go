@@ -175,6 +175,8 @@ func directoryBunnyWorker(baseUrl string, ch chan string, wg *sync.WaitGroup, id
 	}
 }
 
+///// util
+
 func payloadGenerator(payload string) []string {
 	escaped := url.QueryEscape(payload)
 	return []string{ 
@@ -206,7 +208,7 @@ func fatalIfErr(err error) {
 	}
 }
 
-//// lib start
+///// lib
 
 type ToorBnny struct {
 	*http.Client
