@@ -15,11 +15,6 @@ import (
 	"github.com/hashicorp/yamux"
 )
 
-// TODO: 
-// - multiplex connection with rand num
-// - msg format = base64({id,stream,base64(message)})
-// - ping back after timeout idle
-
 type options struct {
 	IpAddress string `short:"i" long:"ipAddress" description:"IP address to connect to" required:"true"`
 	Port int `short:"p" long:"port" description:"Port to connect to" default:"1337"`
