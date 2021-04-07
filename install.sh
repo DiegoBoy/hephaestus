@@ -3,13 +3,6 @@
 
 echo "Installing..."
 
-# reconfig wireshark (setuid)
-sudo apt-get install debconf-utils -y
-sudo debconf-set-selections <<< 'wireshark-common wireshark-common/install-setuid boolean true'
-sudo dpkg-reconfigure wireshark-common -fnoninteractive
-sudo usermod -aG wireshark $USER
-sudo sed -i 's/pkexec //' /usr/share/applications/wireshark.desktop
-
 
 ### BinExp tools
 mkdir -p BinExp
