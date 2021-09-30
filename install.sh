@@ -24,8 +24,8 @@ echo "[X] Disco"
 sudo apt install python3-venv seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
-source ~/.zshrc &> /dev/null
 pipx install git+https://github.com/Tib3rius/AutoRecon.git
+rm -rf ~/.config/AutoRecon
 
 # gobuster
 sudo apt-get install gobuster -y
