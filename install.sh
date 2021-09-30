@@ -21,9 +21,7 @@ echo "source $(pwd)/BinExp/gdb-gef/.gdbinit-gef.py" >> ~/.gdbinit
 echo "[X] Disco"
 
 # autorecon + dependencies
-sudo apt install python3-venv seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
-python3 -m pip install --user pipx
-python3 -m pipx ensurepath
+sudo apt install pipx python3-pip python3-venv seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
 pipx install git+https://github.com/Tib3rius/AutoRecon.git
 rm -rf ~/.config/AutoRecon
 
