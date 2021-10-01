@@ -2,10 +2,13 @@
 
 /BinExp/gdb-gef/
 
+/PrivEsc/linpeas.sh
 /PrivEsc/linux-exploit-suggester/
 /PrivEsc/les.sh
-
 /PrivEsc/wesng/
 /PrivEsc/wes.py
 
 /Post/
+
+/Report/AutoRePort/node_modules/
+/Report/AutoRePort/package-lock.json
