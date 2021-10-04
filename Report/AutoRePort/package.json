@@ -1,10 +1,16 @@
 {
     "name": "autoreport",
     "type": "module",
+    "description": "Automated reporting of AutoRecon findings in Notion",
+    "main": "AutoRePort.js",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
     "dependencies": {
-      "@notionhq/client": "^0.1.9"
-    } 
+        "@notionhq/client": "^0.1.9",
+        "yargs": "^17.2.1"
+    },
+    "devDependencies": {
+        "@types/yargs": "^17.0.3",
+        "tsconfig-paths": "^3.11.0",
+        "typescript": "^4.4.3"
+    }
 }

@@ -1,3 +1,6 @@
+/**/node_modules/
+/**/package-lock.json
+
 /BunnyHat/
 
 /BinExp/gdb-gef/
@@ -11,5 +14,4 @@
 
 /Post/
 
-/Report/AutoRePort/node_modules/
-/Report/AutoRePort/package-lock.json
+/Report/AutoRePort/AutoRePort.js
