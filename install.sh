@@ -66,5 +66,11 @@ git clone https://github.com/EmpireProject/Empire.git Post/Empire
 
 
 
+### Report tools
+echo "[X] Report"
+sudo npm link ./Report/AutoRePort/
+
+
+
 # go hack stuff
 echo "hephaestus toolkit installed, go hack stuff x_x"
