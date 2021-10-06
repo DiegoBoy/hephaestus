@@ -4,6 +4,9 @@
     "description": "Automated reporting of AutoRecon findings in Notion",
     "main": "AutoRePort.js",
     "version": "1.0.0",
+    "bin": {
+        "autoreport": "AutoRePort.js"
+    },
     "dependencies": {
         "@notionhq/client": "^0.1.9",
         "yargs": "^17.2.1"
