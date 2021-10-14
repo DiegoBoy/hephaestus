@@ -8,6 +8,8 @@
 /PrivEsc/linpeas.sh
 /PrivEsc/linux-exploit-suggester/
 /PrivEsc/les.sh
+/PrivEsc/pspy32
+/PrivEsc/pspy64
 /PrivEsc/wesng/
 /PrivEsc/wes.py
 /PrivEsc/winPEASany.exe
