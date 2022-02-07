@@ -58,6 +58,7 @@ def parse_args():
     parser = argparse.ArgumentParser(prog='Ś3ṣa.py', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     subparsers = parser.add_subparsers(title='sub-commands', required=True, metavar='MODE')
+    add_test_subparser(subparsers)
     add_fuzz_subparser(subparsers)
     add_offset_subparser(subparsers)
     add_badchars_subparser(subparsers)
