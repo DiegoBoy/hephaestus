@@ -33,20 +33,20 @@ sudo apt-get install netcat-openbsd -y
 
 
 ### PrivEsc tools
-mkdir -p $SCRIPT_DIR/PrivEsc
 echo "[X] PrivEsc"
+mkdir -p $SCRIPT_DIR/PrivEsc
 
 # peas
 cd $SCRIPT_DIR/PrivEsc
 wget -q -o /dev/null https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
 wget -q -o /dev/null https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/raw/master/winPEAS/winPEASexe/binaries/Release/winPEASany.exe
-popd
+popd 2>/dev/null
 
 #pspy
 cd $SCRIPT_DIR/PrivEsc
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy32
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
-popd
+popd 2>/dev/null
 
 
 
@@ -67,8 +67,11 @@ git clone https://github.com/EmpireProject/Empire.git $SCRIPT_DIR/Post/Empire
 
 ### Report tools
 echo "[X] Report"
-sudo apt install -y npm
-sudo npm link $SCRIPT_DIR/Report/AutoRePort
+
+cd $SCRIPT_DIR/Report/AutoRePort/
+sudo apt install -y npm node-typescript
+sudo npm link
+popd
 
 
 

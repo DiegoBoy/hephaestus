@@ -3,6 +3,9 @@
     "type": "module",
     "description": "Automated reporting of AutoRecon findings in Notion",
     "main": "AutoRePort.js",
+    "scripts": {
+        "preinstall": "tsc"
+    },
     "version": "1.0.0",
     "bin": {
         "autoreport": "AutoRePort.js"
