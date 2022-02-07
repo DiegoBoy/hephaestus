@@ -43,6 +43,12 @@ wget -q -o /dev/null https://raw.githubusercontent.com/carlospolop/privilege-esc
 wget -q -o /dev/null https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/raw/master/winPEAS/winPEASexe/binaries/Release/winPEASany.exe
 cd ..
 
+#pspy
+cd PrivEsc
+wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy32
+wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
+cd ..
+
 # linux exploit suggester
 git clone https://github.com/DiegoBoy/linux-exploit-suggester.git PrivEsc/linux-exploit-suggester
 
@@ -63,6 +69,12 @@ git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
 
 # Empire
 git clone https://github.com/EmpireProject/Empire.git Post/Empire
+
+
+
+### Report tools
+echo "[X] Report"
+sudo npm link ./Report/AutoRePort/
 
 
 
