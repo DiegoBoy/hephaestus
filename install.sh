@@ -2,18 +2,17 @@
 # hephaestus installer
 echo "Installing..."
 sudo apt-get update > /dev/null
-
-
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 ### BinExp tools
 echo "[X] BinExp"
-mkdir -p BinExp
+mkdir -p $SCRIPT_DIR/BinExp
 
 # gdb-gef
 sudo apt-get install gdb -y
-mkdir BinExp/gdb-gef
-wget -q -O BinExp/gdb-gef/.gdbinit-gef.py https://github.com/hugsy/gef/raw/master/gef.py
-echo "source $(pwd)/BinExp/gdb-gef/.gdbinit-gef.py" >> ~/.gdbinit
+mkdir -p $SCRIPT_DIR/BinExp/gdb-gef
+wget -q -O $SCRIPT_DIR/BinExp/gdb-gef/.gdbinit-gef.py https://github.com/hugsy/gef/raw/master/gef.py
+echo "source $SCRIPT_DIR/BinExp/gdb-gef/.gdbinit-gef.py" >> ~/.gdbinit
 
 
 
@@ -34,47 +33,42 @@ sudo apt-get install netcat-openbsd -y
 
 
 ### PrivEsc tools
-mkdir -p PrivEsc
+mkdir -p $SCRIPT_DIR/PrivEsc
 echo "[X] PrivEsc"
 
 # peas
-cd PrivEsc
+cd $SCRIPT_DIR/PrivEsc
 wget -q -o /dev/null https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
 wget -q -o /dev/null https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/raw/master/winPEAS/winPEASexe/binaries/Release/winPEASany.exe
-cd ..
+popd
 
 #pspy
-cd PrivEsc
+cd $SCRIPT_DIR/PrivEsc
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy32
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
-cd ..
-
-# linux exploit suggester
-git clone https://github.com/DiegoBoy/linux-exploit-suggester.git PrivEsc/linux-exploit-suggester
-
-# windows exploit suggester
-git clone https://github.com/bitsadmin/wesng.git PrivEsc/wesng
+popd
 
 
 
 ### Post tools
 echo "[X] Post"
-mkdir -p Post
+mkdir -p $SCRIPT_DIR/Post
 
 # nishang
-git clone https://github.com/samratashok/nishang.git Post/nishang
+git clone https://github.com/samratashok/nishang.git $SCRIPT_DIR/Post/nishang
 
 # PowerSploit 
-git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
+git clone https://github.com/PowerShellMafia/PowerSploit.git $SCRIPT_DIR/Post/PowerSploit
 
 # Empire
-git clone https://github.com/EmpireProject/Empire.git Post/Empire
+git clone https://github.com/EmpireProject/Empire.git $SCRIPT_DIR/Post/Empire
 
 
 
 ### Report tools
 echo "[X] Report"
-sudo npm link ./Report/AutoRePort/
+sudo apt install -y npm
+sudo npm link $SCRIPT_DIR/Report/AutoRePort
 
 
 
