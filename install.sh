@@ -14,10 +14,21 @@ mkdir -p $SCRIPT_DIR/BinExp/gdb-gef
 wget -q -O $SCRIPT_DIR/BinExp/gdb-gef/.gdbinit-gef.py https://github.com/hugsy/gef/raw/master/gef.py
 echo "source $SCRIPT_DIR/BinExp/gdb-gef/.gdbinit-gef.py" >> ~/.gdbinit
 
+# pwntools
+sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade pwntools
+
 
 
 ### Disco tools
 echo "[X] Disco"
+
+# rustscan
+TEMP_DEB="$(mktemp)"
+wget -O "$TEMP_DEB" 'https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb'
+sudo dpkg -i "$TEMP_DEB"
+rm -f "$TEMP_DEB"
 
 # autorecon + dependencies
 sudo apt install pipx python3-pip python3-venv seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
@@ -38,8 +49,8 @@ mkdir -p $SCRIPT_DIR/PrivEsc
 
 # peas
 cd $SCRIPT_DIR/PrivEsc
-wget -q -o /dev/null https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
-wget -q -o /dev/null https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/raw/master/winPEAS/winPEASexe/binaries/Release/winPEASany.exe
+wget -q -o /dev/null https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh
+wget -q -o /dev/null https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASany_ofs.exe --output-document=winpeas.exe
 popd 2>/dev/null
 
 #pspy
