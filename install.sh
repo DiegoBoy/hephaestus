@@ -66,6 +66,9 @@ popd 2>/dev/null
 echo "[X] Post"
 mkdir -p Post
 
+# BunnyHat
+git clone https://github.com/DiegoBoy/BunnyHat.git Post/BunnyHat
+
 # nishang
 git clone https://github.com/samratashok/nishang.git Post/nishang
 
@@ -74,7 +77,6 @@ git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
 
 # Empire
 git clone https://github.com/EmpireProject/Empire.git Post/Empire
-
 
 
 ### Report tools
