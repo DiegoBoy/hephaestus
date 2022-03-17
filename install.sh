@@ -32,9 +32,11 @@ sudo dpkg -i "$TEMP_DEB"
 rm -f "$TEMP_DEB"
 
 # autorecon + dependencies
-sudo apt install pipx python3-pip python3-venv seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
-pipx install git+https://github.com/Tib3rius/AutoRecon.git
-rm -rf ~/.config/AutoRecon
+sudo apt install seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
+git clone https://github.com/Tib3rius/AutoRecon.git Disco/AutoRecon
+python3 -m pip install -r Disco/AutoRecon/requirements.txt
+chmod +x Disco/AutoRecon/autorecon.py
+sudo ln -s "$SCRIPT_DIR/Disco/AutoRecon/autorecon.py" /usr/local/bin/autorecon
 
 # gobuster
 sudo apt-get install gobuster -y
@@ -67,6 +69,7 @@ echo "[X] Post"
 mkdir -p Post
 
 # BunnyHat
+sudo apt install -y golang
 git clone https://github.com/DiegoBoy/BunnyHat.git Post/BunnyHat
 
 # nishang
