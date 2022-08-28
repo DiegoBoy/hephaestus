@@ -54,13 +54,13 @@ mkdir -p PrivEsc
 cd PrivEsc
 wget -q -o /dev/null https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh
 wget -q -o /dev/null https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASany_ofs.exe --output-document=winpeas.exe
-popd 2>/dev/null
+cd $SCRIPT_DIR
 
 #pspy
 cd PrivEsc
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy32
 wget -q -o /dev/null https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
-popd 2>/dev/null
+cd $SCRIPT_DIR
 
 
 
@@ -88,10 +88,9 @@ echo "[X] Report"
 cd Report/AutoRePort/
 sudo apt install -y npm node-typescript
 sudo npm link
-popd
+cd $SCRIPT_DIR
 
 
 
 # go hack stuff
-popd
 echo "hephaestus toolkit installed, go hack stuff x_x"
