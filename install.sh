@@ -88,7 +88,7 @@ echo "[X] Report"
 cd Report/AutoRePort/
 sudo apt install -y npm node-typescript
 npm i -D @types/node
-sudo npm link
+sudo npm i -g .
 cd $SCRIPT_DIR
 
 
