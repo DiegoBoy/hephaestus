@@ -239,17 +239,11 @@ async function parseArgv() : Promise<AutoRePortArgs> {
             type: "string",
             required: false
         })
-        .option("notionUrl", {
-            alias: "u",
-            description: "URL of the Notion page shared with AutoRePort - not compatible with 'pageId'",
-            type: "string",
-            required: false
-        })
         .option("pageId", {
             alias: "i",
-            description: "ID of the Notion page shared with AutoRePort - not compatible with 'notionUrl'",
+            description: "ID or URL of the Notion page shared with AutoRePort",
             type: "string",
-            required: false
+            required: true
         })
         .option("watchMode", {
             alias: "w",
@@ -268,35 +262,28 @@ async function parseArgv() : Promise<AutoRePortArgs> {
         })
         .help(false)
         .version(false)
-        args.wrap(args.terminalWidth())    
-    
-    // parse pageId if URL was provided
-    args.coerce("pageId", async (pageId) => {
-        const notionUrl = (await args.argv).notionUrl
         
-        // !(notionUrl XOR pageId)
-        if (!(notionUrl ? !pageId : pageId)) {
-            throw new Error("Supply either 'notionUrl' or 'pageId'.")
-        }
     
-        // parse URL
-        if (notionUrl) {
-            const regex = "https://www\.notion\.so/(.+)/(.+-)?([a-z0-9]{32})(.+)?"
-            const matches = notionUrl.match(regex); 
-            if (matches) {
-                return matches[3]
-            } else { 
-                throw new Error("Notion URL didn't match the expected regex: " + regex)
-            }
+    args.wrap(args.terminalWidth())
+        
+    // parse pageId if URL was provided
+    const argv = args.coerce("pageId", (pageId) => {
+        const regex = "https:\/\/www\.notion\.so\/(.+)\/(.+-)?([a-z0-9]{32})(.+)?"
+        const matches = pageId.match(regex); 
+        if (matches) {
+            return matches[3]
+        } else { 
+            return pageId
         }
-    })
-
-    return args.argv
+    }).argv
+    
+    return argv
 }
 
 async function main() {
     try {
         const argv = await parseArgv()
+        console.log((argv))
         const autoRePort = await AutoRePort.getInstance(argv.outputDir + "/scans", argv.pageId, argv.notionApiKey)
 
         if (argv.testMode) {
