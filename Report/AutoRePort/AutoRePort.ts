@@ -283,7 +283,6 @@ async function parseArgv() : Promise<AutoRePortArgs> {
 async function main() {
     try {
         const argv = await parseArgv()
-        console.log((argv))
         const autoRePort = await AutoRePort.getInstance(argv.outputDir + "/scans", argv.pageId, argv.notionApiKey)
 
         if (argv.testMode) {
