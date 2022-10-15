@@ -34,7 +34,7 @@ rm -f "$TEMP_DEB"
 # autorecon + dependencies
 sudo apt install seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
 git clone https://github.com/Tib3rius/AutoRecon.git Disco/AutoRecon
-python3 -m pip install -r Disco/AutoRecon/requirements.txt
+sudo python3 -m pip install -r Disco/AutoRecon/requirements.txt
 chmod +x Disco/AutoRecon/autorecon.py
 sudo ln -s "$SCRIPT_DIR/Disco/AutoRecon/autorecon.py" /usr/local/bin/autorecon
 
