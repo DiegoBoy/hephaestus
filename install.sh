@@ -12,7 +12,7 @@ mkdir -p BinExp
 # gdb-gef
 sudo apt-get install gdb -y
 mkdir -p BinExp/gdb-gef
-wget -q -O BinExp/gdb-gef/.gdbinit-gef.py https://github.com/hugsy/gef/raw/master/gef.py
+wget -q -o /dev/null -O BinExp/gdb-gef/.gdbinit-gef.py https://github.com/hugsy/gef/raw/master/gef.py
 echo "source $SCRIPT_DIR/BinExp/gdb-gef/.gdbinit-gef.py" >> ~/.gdbinit
 
 # pwntools
@@ -26,10 +26,10 @@ python3 -m pip install --upgrade pwntools
 echo "[X] Disco"
 
 # rustscan
-TEMP_DEB="$(mktemp)"
-wget -O "$TEMP_DEB" 'https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb'
-sudo dpkg -i "$TEMP_DEB"
-rm -f "$TEMP_DEB"
+TMP_FILE="$(mktemp)"
+wget -q -o /dev/null -O $TMP_FILE 'https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb'
+sudo dpkg -i $TMP_FILE
+rm -f $TMP_FILE
 
 # autorecon + dependencies
 sudo apt install seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf -y
@@ -80,6 +80,16 @@ git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
 
 # Empire
 git clone https://github.com/EmpireProject/Empire.git Post/Empire
+
+# Sysinternals
+mkdir -p Post/Sysinternals
+cd Post/Sysinternals
+TMP_FILE="$(mktemp)"
+wget -q -o /dev/null -O $TMP_FILE 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
+unzip -q $TMP_FILE
+rm -f $TMP_FILE
+cd $SCRIPT_DIR
+
 
 
 ### Report tools
