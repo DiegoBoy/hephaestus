@@ -59,9 +59,9 @@ if [[ ${3} ]]; then
 fi
 
 target=${2}
-open_filename="${protocol}-open${ip_flag}.nmap.grep"
-nmap_filename="${protocol}-scan${ip_flag}.nmap"
-amap_filename="${protocol}-scan${ip_flag}.amap"
+open_filename="${protocol}-open${ip_flag}_${target}.nmap.grep"
+nmap_filename="${protocol}-scan${ip_flag}_${target}.nmap"
+amap_filename="${protocol}-scan${ip_flag}_${target}.amap"
 
 log_info "[*] Looking for open ports..."
 nmap ${target} ${nmap_flag} -Pn -n -v -p- -T4 -oG ${open_filename} ${ip_flag}

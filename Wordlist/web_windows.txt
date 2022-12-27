@@ -1,0 +1,5 @@
+rds
+RDWeb
+vdi
+pswa
+WSMAN
