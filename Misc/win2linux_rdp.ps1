@@ -1,54 +1,48 @@
-function cacheCredsPromptUI {
-	param (
-		[Parameter(Mandatory=$true)]
-		[string]$CmdKeyName,
+param (
+	[Parameter(Mandatory=$true)]
+	[string]$Server,
 
-		[Parameter(Mandatory=$false)]
-		[string]$DefaultUser
-	)
+	[Parameter(Mandatory=$true)]
+	[string]$User,
 
-	# prompt creds
-	$cred = Get-Credential -Credential "$DefaultUser"
-	$user = $cred.GetNetworkCredential().username
-	$passwd = $cred.GetNetworkCredential().password
+	[Parameter(Mandatory=$false)]
+	[int]$Port=3389,
 
-	# cache creds
-	cmdkey /generic:$CmdKeyName /user:$user /pass:$passwd
-}
+	[Parameter(Mandatory=$false)]
+	[switch]$UseAllMonitors=$false
+)
 
-function cacheCredsPromptTextOnly {
-	param (
-		[Parameter(Mandatory=$true)]
-		[string]$CmdKeyName,
+# print banner
+Write-Host @"
+#########################
+#  RDP helper for xrdp  #
+#########################
 
-		[Parameter(Mandatory=$false)]
-		[string]$DefaultUser
-	)
+[*] Connection details:
+      user = ${User}
+    server = ${Server}
+      port = ${Port}
+"@
 
-	# prompt and cache creds
-	if (($user = Read-Host "username [$DefaultUser]") -eq '') { $user = $DefaultUser }
-	cmdkey /generic:$CmdKeyName /user:$user /pass
-}
+# flag for multiple monitors
+if ($UseAllMonitors) { $multiMonFlag = "/multimon" } else { $multiMonFlag = "" }
 
-Write-Host "#########################"
-Write-Host "#  RDP helper for xrdp  #"
-Write-Host "#########################"
-Write-Host
+# cmdkey key
+$keyName = "TERMSRV/${Server}"	
 
-# prompt for RDP settings and creds
-$server = Read-Host "Hostname or IP"
-if (($port = Read-Host "Port [3389]") -eq '') { $port = 3389 }
-if (($multiMon = Read-Host "Use all monitors [false]") -ne '') { $multiMon = "/multimon" }
+# prompt for creds
+$cred = Get-Credential -Credential $User
+$username = $cred.GetNetworkCredential().username
+$passwd = $cred.GetNetworkCredential().password
 
+# wrap in try-finally to always clear cmdkey
 try
 {
 	# cache creds
-	$keyName = "TERMSRV/$server"
-	#cacheCredsPromptTextOnly -CmdKeyName $keyName -DefaultUser "db"
-	cacheCredsPromptUI -CmdKeyName $keyName -DefaultUser "db"
-
-	# remote-in using chached creds
-	mstsc /v:"${server}:${port}" $multiMon
+	cmdkey /generic:$keyName /user:$user /pass:$passwd
+	
+	# connect to rdp using chached creds
+	mstsc /v:"${Server}:${Port}" $multiMonFlag
 
 	# wait before clearing creds so mstsc.exe has time to use them
 	Start-Sleep -s 10
