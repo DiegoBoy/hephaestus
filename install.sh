@@ -46,6 +46,19 @@ sudo apt-get install netcat-openbsd -y
 
 
 
+### Lateral movement tools
+echo "[X] Lateral"
+
+# sshuttle
+sudo apt install sshuttle -y
+
+# ligolo-ng
+#go build -o server cmd/proxy/main.go
+#GOOS=windows GOARCH=i386 go build -o agent_windows_x32.exe cmd/agent/main.go
+#GOOS=windows GOARCH=amd64 go build -o agent_windows_x64.exe cmd/agent/main.go
+#GOOS=linux GOARCH=i386 go build -o agent_linux_x32.exe cmd/agent/main.go
+#GOOS=linux GOARCH=amd64 go build -o agent_linux_x64.exe cmd/agent/main.go
+
 ### PrivEsc tools
 echo "[X] PrivEsc"
 mkdir -p PrivEsc
@@ -68,9 +81,9 @@ cd $SCRIPT_DIR
 echo "[X] Post"
 mkdir -p Post
 
-# BunnyHat
-sudo apt install -y golang
-git clone https://github.com/DiegoBoy/BunnyHat.git Post/BunnyHat
+## C2
+# Sliver
+curl https://sliver.sh/install | sudo bash 
 
 # nishang
 git clone https://github.com/samratashok/nishang.git Post/nishang
@@ -80,6 +93,11 @@ git clone https://github.com/PowerShellMafia/PowerSploit.git Post/PowerSploit
 
 # Empire
 git clone https://github.com/EmpireProject/Empire.git Post/Empire
+
+## Tools
+# BunnyHat
+sudo apt install -y golang
+git clone https://github.com/DiegoBoy/BunnyHat.git Post/BunnyHat
 
 # Sysinternals
 mkdir -p Post/Sysinternals
