@@ -1,0 +1,1 @@
+taskkill /f /im rdpclip.exe /fi "username eq $env:USERNAME"; rdpclip.exe
